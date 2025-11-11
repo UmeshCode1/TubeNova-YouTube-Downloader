@@ -1,0 +1,31 @@
+/* Galaxy background */
+#galaxy {
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(0,229,255,0.08), transparent),
+              radial-gradient(1000px 500px at 90% 20%, rgba(255,47,210,0.06), transparent),
+              radial-gradient(800px 400px at 50% 90%, rgba(0,255,170,0.06), transparent),
+              linear-gradient(180deg, #0b1020 0%, #060912 100%);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+/* Neon buttons */
+button, .btn {
+  transition: transform .15s ease, box-shadow .2s ease;
+}
+button:hover, .btn:hover { transform: translateY(-1px); }
+button:active, .btn:active { transform: translateY(0px) scale(0.98); }
+
+/* Toast */
+#toast .card { backdrop-filter: blur(16px); }
+
+/* Hide default focus outline but keep accessible ring via Tailwind */
+*:focus { outline: none; }
+
+@keyframes drift {
+  0% { filter: hue-rotate(0deg) brightness(1); transform: translateY(0px) scale(1); }
+  100% { filter: hue-rotate(15deg) brightness(1.05); transform: translateY(-8px) scale(1.01); }
+}
