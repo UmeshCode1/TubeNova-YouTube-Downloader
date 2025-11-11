@@ -1,0 +1,2 @@
+# For convenience on platforms expecting requirements.txt at repo root
+-r backend/requirements.txt
