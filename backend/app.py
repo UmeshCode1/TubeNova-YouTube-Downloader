@@ -39,10 +39,14 @@ def info():
                     if label in VIDEO_QUALITIES:
                         formats.append({
                             'format_id': f['format_id'],
+                            'quality': label,
                             'label': label,
+                            'height': height,
+                            'format_note': label,
                             'filesize': f.get('filesize'),
                             'ext': f.get('ext'),
-                            'type': 'video'
+                            'type': 'video',
+                            'url': f.get('url')
                         })
             elif f.get('vcodec') == 'none' and f.get('acodec') != 'none':
                 # audio only
@@ -52,10 +56,15 @@ def info():
                     if label in AUDIO_BITRATES:
                         formats.append({
                             'format_id': f['format_id'],
+                            'quality': label,
                             'label': label,
+                            'format_note': f"Audio {label}",
+                            'abr': int(abr),
                             'filesize': f.get('filesize'),
                             'ext': f.get('ext'),
-                            'type': 'audio'
+                            'acodec': f.get('acodec'),
+                            'type': 'audio',
+                            'url': f.get('url')
                         })
         # Deduplicate labels keeping first
         seen = set()
@@ -65,13 +74,16 @@ def info():
                 cleaned.append(fm)
                 seen.add(fm['label'])
         resp = {
-            'id': data.get('id'),
-            'title': data.get('title'),
-            'uploader': data.get('uploader') or data.get('channel'),
-            'duration': data.get('duration'),
-            'thumbnail': data.get('thumbnail'),
-            'webpage_url': data.get('webpage_url'),
-            'formats': cleaned
+            'success': True,
+            'data': {
+                'id': data.get('id'),
+                'title': data.get('title'),
+                'uploader': data.get('uploader') or data.get('channel'),
+                'duration': data.get('duration'),
+                'thumbnail': data.get('thumbnail'),
+                'webpage_url': data.get('webpage_url'),
+                'formats': cleaned
+            }
         }
         return jsonify(resp)
     except yt_dlp.utils.DownloadError as e:

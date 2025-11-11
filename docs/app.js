@@ -212,26 +212,51 @@ async function downloadSelected() {
 
   // Check if we're in fallback mode
   if (state.downloadMode === 'fallback' && window.TubeNovaFallback) {
-    // Fallback mode: redirect to download service
-    toast('🌐 Opening download service...', 'info');
-    window.TubeNovaFallback.downloadFallback(url, quality, type);
+    // Fallback mode: use direct download from Invidious
+    toast('🌐 Preparing download...', 'info');
     
-    // Still track it
-    state.downloadsThisSession += 1;
-    sessionStorage.setItem('tn_downloads', String(state.downloadsThisSession));
-    setAnalytics();
-    
-    saveHistory({
-      title: state.meta.title,
-      thumbnail: state.meta.thumbnail,
-      url: state.meta.webpage_url,
-      type, quality
-    });
-    
-    $('#progressLabel').textContent = 'Redirected';
-    $('#progressBar').style.width = '100%';
-    if (window.updateProgressEmoji) window.updateProgressEmoji('complete');
-    setTimeout(() => { $('#progressBar').style.width = '0%'; }, 1000);
+    try {
+      const success = await window.TubeNovaFallback.downloadFallback(state.meta, quality, type);
+      
+      if (success) {
+        // Track successful download
+        state.downloadsThisSession += 1;
+        sessionStorage.setItem('tn_downloads', String(state.downloadsThisSession));
+        setAnalytics();
+        
+        if (window.updateStats) window.updateStats();
+        
+        saveHistory({
+          title: state.meta.title,
+          thumbnail: state.meta.thumbnail,
+          url: state.meta.webpage_url,
+          type, quality
+        });
+        
+        // Confetti celebration
+        if (window.confetti) {
+          confetti({ particleCount: 160, spread: 70, origin: { y: 0.2 } });
+        }
+        if (window.playSound) window.playSound('success');
+        if (window.showReaction) window.showReaction('party');
+        
+        toast('✅ Download started!');
+        $('#progressLabel').textContent = 'Done';
+        $('#progressBar').style.width = '100%';
+        if (window.updateProgressEmoji) window.updateProgressEmoji('complete');
+      } else {
+        $('#progressLabel').textContent = 'Redirected';
+        $('#progressBar').style.width = '100%';
+      }
+      
+      setTimeout(() => { $('#progressBar').style.width = '0%'; }, 1000);
+    } catch (e) {
+      console.error('Fallback download error:', e);
+      toast('❌ Download failed', 'error');
+      $('#progressLabel').textContent = 'Error';
+      $('#progressBar').style.width = '0%';
+      if (window.updateProgressEmoji) window.updateProgressEmoji('error');
+    }
     return;
   }
 

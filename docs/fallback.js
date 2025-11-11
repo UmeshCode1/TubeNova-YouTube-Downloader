@@ -1,5 +1,5 @@
 // TubeNova Serverless Fallback
-// Client-side YouTube info extraction using CORS proxies
+// Client-side YouTube info extraction using Invidious API
 
 const CORS_PROXIES = [
   'https://corsproxy.io/?',
@@ -8,6 +8,9 @@ const CORS_PROXIES = [
 ];
 
 let currentProxyIndex = 0;
+
+// Backend URL helper (matches app.js)
+const BACKEND = () => (window.BACKEND_URL || 'http://127.0.0.1:5000').replace(/\/$/, '');
 
 // Get current CORS proxy
 function getCorsProxy() {
@@ -34,31 +37,106 @@ function extractVideoId(url) {
   return null;
 }
 
-// Fetch video info using CORS proxy fallback
+// Fetch video info using multiple APIs
 async function fetchInfoFallback(url) {
   const videoId = extractVideoId(url);
   if (!videoId) {
     throw new Error('Invalid YouTube URL');
   }
   
-  // Try oEmbed API first (no CORS issues)
+  // Try Invidious API (best option - no CORS, full data)
+  const invidiousInstances = [
+    'https://invidious.io.lol',
+    'https://inv.nadeko.net',
+    'https://invidious.private.coffee'
+  ];
+  
+  for (const instance of invidiousInstances) {
+    try {
+      const response = await fetch(`${instance}/api/v1/videos/${videoId}`);
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Parse formats from Invidious
+        const formats = [];
+        
+        // Add video formats
+        if (data.formatStreams) {
+          data.formatStreams.forEach(f => {
+            if (f.type && f.type.includes('video')) {
+              const quality = f.qualityLabel || f.quality || `${f.resolution}p`;
+              formats.push({
+                format_id: f.itag || f.url,
+                quality: quality,
+                height: parseInt(f.resolution) || 0,
+                format_note: quality,
+                ext: f.container || 'mp4',
+                filesize: f.size || 0,
+                url: f.url,
+                type: 'video'
+              });
+            }
+          });
+        }
+        
+        // Add adaptive formats (higher quality)
+        if (data.adaptiveFormats) {
+          data.adaptiveFormats.forEach(f => {
+            if (f.type && f.type.includes('video')) {
+              const quality = f.qualityLabel || f.quality || `${f.resolution}p`;
+              formats.push({
+                format_id: f.itag || f.url,
+                quality: quality,
+                height: parseInt(f.resolution) || 0,
+                format_note: quality,
+                ext: f.container || 'mp4',
+                filesize: f.size || 0,
+                url: f.url,
+                type: 'video'
+              });
+            } else if (f.type && f.type.includes('audio')) {
+              const bitrate = f.bitrate ? Math.round(f.bitrate / 1000) + 'k' : '128k';
+              formats.push({
+                format_id: f.itag || f.url,
+                quality: bitrate,
+                format_note: `Audio ${bitrate}`,
+                ext: f.container || 'm4a',
+                acodec: f.audioCodec || 'mp4a',
+                abr: parseInt(bitrate),
+                filesize: f.size || 0,
+                url: f.url,
+                type: 'audio'
+              });
+            }
+          });
+        }
+        
+        return {
+          success: true,
+          data: {
+            id: videoId,
+            title: data.title,
+            uploader: data.author,
+            thumbnail: data.videoThumbnails?.[0]?.url || `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+            duration: data.lengthSeconds || 0,
+            webpage_url: `https://www.youtube.com/watch?v=${videoId}`,
+            formats: formats
+          }
+        };
+      }
+    } catch (e) {
+      console.warn(`Invidious ${instance} failed:`, e);
+      continue;
+    }
+  }
+  
+  // Fallback to oEmbed API (basic info only)
   try {
     const oembedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
     const response = await fetch(oembedUrl);
     
     if (response.ok) {
       const data = await response.json();
-      
-      // Get additional info from noembed.com (more detailed)
-      let duration = 0;
-      try {
-        const noembedUrl = `https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`;
-        const noembedRes = await fetch(noembedUrl);
-        if (noembedRes.ok) {
-          const noembedData = await noembedRes.json();
-          duration = noembedData.duration || 0;
-        }
-      } catch {}
       
       return {
         success: true,
@@ -67,7 +145,7 @@ async function fetchInfoFallback(url) {
           title: data.title,
           uploader: data.author_name,
           thumbnail: data.thumbnail_url,
-          duration: duration,
+          duration: 0,
           webpage_url: `https://www.youtube.com/watch?v=${videoId}`,
           formats: generateMockFormats(videoId)
         }
@@ -77,8 +155,7 @@ async function fetchInfoFallback(url) {
     console.warn('oEmbed failed:', e);
   }
   
-  // Fallback to scraping with CORS proxy
-  return await scrapeVideoInfo(videoId);
+  throw new Error('All fallback methods failed');
 }
 
 // Generate mock formats (best effort without backend)
@@ -155,25 +232,60 @@ async function scrapeVideoInfo(videoId) {
   }
 }
 
-// Download video using redirect (opens in new tab)
-function downloadFallback(url, quality, format) {
-  const videoId = extractVideoId(url);
-  if (!videoId) {
-    throw new Error('Invalid YouTube URL');
+// Download video using direct URL from Invidious
+async function downloadFallback(videoInfo, quality, type) {
+  try {
+    // Find the matching format from fetched info
+    const formats = videoInfo.formats || [];
+    let selectedFormat = null;
+    
+    if (type === 'video') {
+      // Find video format matching quality
+      selectedFormat = formats.find(f => 
+        f.type === 'video' && f.quality && f.quality.includes(quality)
+      );
+      // Fallback to closest quality
+      if (!selectedFormat) {
+        selectedFormat = formats.find(f => f.type === 'video' && f.url);
+      }
+    } else {
+      // Audio format
+      selectedFormat = formats.find(f => 
+        f.type === 'audio' && f.quality && f.quality.includes(quality)
+      );
+      if (!selectedFormat) {
+        selectedFormat = formats.find(f => f.type === 'audio' && f.url);
+      }
+    }
+    
+    if (selectedFormat && selectedFormat.url) {
+      // Direct download using URL
+      const a = document.createElement('a');
+      a.href = selectedFormat.url;
+      const safeTitle = (videoInfo.title || 'tubenova').replace(/[^\w\-\s\(\)\[\]]+/g, '_').slice(0, 80);
+      const ext = selectedFormat.ext || (type === 'audio' ? 'm4a' : 'mp4');
+      a.download = `${safeTitle}_${quality}.${ext}`;
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      
+      return true;
+    } else {
+      // Fallback to third-party service
+      const videoId = extractVideoId(videoInfo.webpage_url);
+      const service = `https://ssyoutube.com/watch?v=${videoId}`;
+      window.open(service, '_blank');
+      
+      toast('🌐 Opening download service...', 'info');
+      toast('⚠️ For best results, configure a backend server!', 'info');
+      return false;
+    }
+  } catch (e) {
+    console.error('Download fallback error:', e);
+    toast('❌ Download failed', 'error');
+    return false;
   }
-  
-  // Use third-party download services
-  const services = [
-    `https://ytmp3.nu/api/download?url=https://www.youtube.com/watch?v=${videoId}`,
-    `https://yt5s.com/api/ajaxSearch/index?url=https://www.youtube.com/watch?v=${videoId}`,
-    `https://ssyoutube.com/watch?v=${videoId}` // Just prepend 'ss' to youtube.com
-  ];
-  
-  // Open first service in new tab
-  window.open(services[2], '_blank');
-  
-  toast('🌐 Opening download service...', 'info');
-  toast('⚠️ For direct downloads, configure a backend server!', 'info');
 }
 
 // Check if backend is available
@@ -201,11 +313,7 @@ async function smartFetch(url) {
     const isAvailable = await checkBackendAvailability(backendUrl);
     if (isAvailable) {
       try {
-        const response = await fetch(`${backendUrl}/api/info`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: url })
-        });
+        const response = await fetch(`${backendUrl}/api/info?url=${encodeURIComponent(url)}`);
         
         if (response.ok) {
           const data = await response.json();
@@ -232,7 +340,8 @@ window.TubeNovaFallback = {
   smartFetch,
   downloadFallback,
   checkBackendAvailability,
-  extractVideoId
+  extractVideoId,
+  fetchInfoFallback
 };
 
-console.log('🚀 TubeNova Fallback loaded (Serverless mode available)');
+console.log('🚀 TubeNova Fallback loaded (Serverless mode with Invidious API)');
