@@ -64,52 +64,135 @@ Live-ready structure:
 - **Fallback:** CORS proxies, YouTube oEmbed API, client-side extraction
 - **Deployment:** GitHub Pages + Render/Railway/Vercel (backend optional)
 
-## Local Setup
+## 🚀 Quick Start
 
-1) Backend
-- Install Python 3.10+
-- Create venv and install requirements
-- Run the Flask app
+### Option 1: Serverless (No Backend Needed!)
 
-2) Frontend
-- Open `docs/index.html` in a local server or browser
-- Set `BACKEND_URL` in `docs/app.js` if running remotely
+**Already live!** Just visit the site:
+👉 **[https://umeshcode1.github.io/TubeNova-YouTube-Downloader/](https://umeshcode1.github.io/TubeNova-YouTube-Downloader/)**
 
-## Deployment
+The site works completely without a backend using client-side fallback mode!
 
-Frontend (GitHub Pages)
+### Option 2: With Backend (Full Features)
 
-- Commit and push; enable Pages on main branch with `/docs` as source.
-- Live URL (after build): <https://umeshcode1.github.io/TubeNova-YouTube-Downloader/>
+For direct streaming downloads, deploy the backend:
 
-Backend (Render)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/UmeshCode1/TubeNova-YouTube-Downloader)
 
-- Create a new Web Service from this repo
-- Build: `pip install -r requirements.txt` (root file includes backend requirements)
-- Start: `gunicorn backend.app:app`
-- Add environment: `YDL_ALLOWED_ORIGINS` (optional CSV whitelist)
-- Or click: [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/UmeshCode1/TubeNova-YouTube-Downloader)
+Then configure the backend URL in the site settings (⚙️ icon).
 
-Backend (Railway)
+📖 **Full deployment guide:** [DEPLOYMENT.md](DEPLOYMENT.md)
 
-- Deploy from repo, auto-detect Python; set start command: `gunicorn backend.app:app`
+## 📚 Documentation
 
-Backend (Vercel)
+- 📖 [**Project Summary**](PROJECT_SUMMARY.md) - Complete overview of features & usage
+- 🚀 [**Deployment Guide**](DEPLOYMENT.md) - Step-by-step deployment instructions
+- 🔧 [**Wiki**](../../wiki) - API reference, troubleshooting, and more
+- 🐛 [**Common Issues**](wiki/Common-Issues.md) - Troubleshooting guide
 
-- Use a Python serverless function or Vercel Python builder; this repo includes a standard Flask server (Render/Railway recommended).
+## 💻 Local Development
+
+### Frontend Only (Recommended for Testing)
+```bash
+cd docs
+python -m http.server 8000
+# Visit http://localhost:8000
+```
+
+### With Backend
+```bash
+# Terminal 1: Backend
+cd backend
+python -m venv venv
+venv\Scripts\activate  # Windows (use `source venv/bin/activate` on Mac/Linux)
+pip install -r requirements.txt
+python app.py
+# Running on http://127.0.0.1:5000
+
+# Terminal 2: Frontend  
+cd docs
+python -m http.server 8080
+# Visit http://localhost:8080
+# Configure backend URL: http://127.0.0.1:5000 (via ⚙️ settings)
+```
+
+📖 **More details:** [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)
 
 
-## Legal & Disclaimer
+## 🎨 Screenshots
 
-This tool is for educational and personal use only. Ensure you have rights to download the content in your jurisdiction. Respect YouTube’s Terms of Service. No copyrighted material is stored on the server; files are streamed directly.
+### Main Interface
+Beautiful cartoon-style UI with floating shapes and smooth animations!
 
-## Credits
+### Features Preview
+- 🎬 Video info with thumbnail and metadata
+- 📊 Progress tracking with speed & ETA
+- 🎉 Reaction buttons and confetti effects
+- 📜 Download history with session stats
+- 🌙 Dark/Light mode toggle
+- ⚙️ Advanced options panel
 
-Developed with ❤️ by Umesh Patel
+## 🛠️ Built With
 
-## Repo Name
+- **Frontend:** HTML5, CSS3, JavaScript ES6+
+- **Styling:** TailwindCSS 3.x (CDN)
+- **Animations:** GSAP 3.12, custom CSS animations
+- **Effects:** canvas-confetti, Web Audio API
+- **Backend:** Python 3.10+, Flask 3.0, yt-dlp 2024.10
+- **Deployment:** GitHub Pages, Render/Railway/Vercel
 
-TubeNova-YouTube-Downloader
+## 📊 Project Stats
+
+- **Lines of Code:** 2000+
+- **Files:** 15+ (HTML, CSS, JS, Python, Markdown)
+- **Features:** 50+ implemented
+- **Animations:** 20+ custom CSS animations
+- **Deployment Modes:** 2 (Serverless + Backend)
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to:
+- 🐛 Report bugs
+- 💡 Suggest features
+- 🔧 Submit pull requests
+- ⭐ Star the repository
+
+## 📝 Legal & Disclaimer
+
+This tool is for **educational and personal use only**. 
+
+- ⚖️ Ensure you have rights to download content in your jurisdiction
+- 📜 Respect YouTube's Terms of Service
+- 🚫 No copyrighted material is stored on the server
+- 📡 Files are streamed directly from YouTube
+
+**Use responsibly!**
+
+## 👨‍💻 Credits
+
+Developed with ❤️ by **Umesh Patel** ([@UmeshCode1](https://github.com/UmeshCode1))
+
+### Special Thanks
+- YouTube oEmbed API for metadata
+- yt-dlp for extraction
+- TailwindCSS for styling
+- GSAP for animations
+- GitHub for hosting
+
+## 🌟 Support
+
+If you find TubeNova useful:
+- ⭐ Star the repository
+- 🔗 Share with friends
+- 🐛 Report issues
+- 💖 Contribute code
+
+## 📄 License
+
+MIT License - feel free to use for personal and educational purposes!
 
 ---
-Short summary for portfolio: Modern YouTube downloader with instant streaming backend, glassmorphism UI, animations, dark mode, history, analytics, and confetti—deployable on GitHub Pages + Render.
+
+**Portfolio Summary:** Modern YouTube downloader with cartoon-style UI, GSAP animations, smart serverless fallback, download history, dark mode, confetti effects, and comprehensive documentation—fully deployable on GitHub Pages + optional backend on Render/Railway.
+
+**Tags:** `youtube-downloader` `python-flask` `yt-dlp` `tailwindcss` `gsap` `github-pages` `serverless` `web-app` `cartoon-ui` `download-manager`
