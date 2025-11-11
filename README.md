@@ -41,27 +41,37 @@ Live-ready structure:
 ## Deployment
 
 Frontend (GitHub Pages)
+
 - Commit and push; enable Pages on main branch with `/docs` as source.
+- Live URL (after build): <https://umeshcode1.github.io/TubeNova-YouTube-Downloader/>
 
 Backend (Render)
+
 - Create a new Web Service from this repo
-- Build: `pip install -r backend/requirements.txt`
+- Build: `pip install -r requirements.txt` (root file includes backend requirements)
 - Start: `gunicorn backend.app:app`
 - Add environment: `YDL_ALLOWED_ORIGINS` (optional CSV whitelist)
+- Or click: [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/UmeshCode1/TubeNova-YouTube-Downloader)
 
 Backend (Railway)
+
 - Deploy from repo, auto-detect Python; set start command: `gunicorn backend.app:app`
 
 Backend (Vercel)
+
 - Use a Python serverless function or Vercel Python builder; this repo includes a standard Flask server (Render/Railway recommended).
 
+
 ## Legal & Disclaimer
+
 This tool is for educational and personal use only. Ensure you have rights to download the content in your jurisdiction. Respect YouTube’s Terms of Service. No copyrighted material is stored on the server; files are streamed directly.
 
 ## Credits
+
 Developed with ❤️ by Umesh Patel
 
 ## Repo Name
+
 TubeNova-YouTube-Downloader
 
 ---
