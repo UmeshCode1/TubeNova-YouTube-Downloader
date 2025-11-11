@@ -88,6 +88,18 @@ The site works completely without a backend using client-side fallback mode!
 
 For direct streaming downloads, deploy the backend:
 
+#### 🤗 **Recommended: Hugging Face Spaces** (Free + Easy!)
+
+1. Create a free account at [Hugging Face](https://huggingface.co/)
+2. Create a new Space with Gradio SDK
+3. Upload `backend/app_hf.py` (rename to `app.py`) and `backend/requirements_hf.txt` (rename to `requirements.txt`)
+4. Your backend will be live at: `https://YOUR_USERNAME-tubenova-downloader.hf.space`
+5. Configure the backend URL in site settings (⚙️ icon)
+
+📖 **Detailed HF guide:** [DEPLOY_HUGGINGFACE.md](DEPLOY_HUGGINGFACE.md)
+
+#### 🔧 Alternative: Render/Railway/Vercel
+
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/UmeshCode1/TubeNova-YouTube-Downloader)
 
 Then configure the backend URL in the site settings (⚙️ icon).
@@ -149,8 +161,8 @@ Beautiful cartoon-style UI with floating shapes and smooth animations!
 - **Styling:** TailwindCSS 3.x (CDN)
 - **Animations:** GSAP 3.12, custom CSS animations
 - **Effects:** canvas-confetti, Web Audio API
-- **Backend:** Python 3.10+, Flask 3.0, yt-dlp 2024.10
-- **Deployment:** GitHub Pages, Render/Railway/Vercel
+- **Backend:** Python 3.10+, Flask 3.0, yt-dlp 2024.10, Gradio 4.44 (Hugging Face)
+- **Deployment:** GitHub Pages, Hugging Face Spaces, Render/Railway/Vercel
 
 ## 📊 Project Stats
 
