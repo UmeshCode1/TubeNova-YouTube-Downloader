@@ -1,12 +1,12 @@
-# 🎬 TubeNova – Download Smarter 🎧📽️
+# 🎬 TubeNova – Download Smarter with AI 🤖🎧📽️
 
-A modern, fast, and fun YouTube downloader with a **cartoon-style UI**, smooth animations, and **working downloads**!
+A modern, fast, and fun YouTube downloader with a **cartoon-style UI**, smooth animations, **working downloads**, and **AI-powered analysis** using Hugging Face models!
 
 **🌟 Live Demo:** [https://umeshcode1.github.io/TubeNova-YouTube-Downloader/](https://umeshcode1.github.io/TubeNova-YouTube-Downloader/)
 
-## ✅ **ALL FEATURES WORKING!**
+## ✅ **ALL FEATURES WORKING + AI-POWERED!**
 
-**🎉 Latest Update:** Downloads now work perfectly using **Invidious API**!
+**🎉 Latest Update:** Now with **5 Hugging Face AI Models** for intelligent video analysis!
 - ✅ **Direct downloads** to your device (no redirects!)
 - ✅ **Serverless mode** - works without backend
 - ✅ **Real progress tracking** with speed/ETA
@@ -14,6 +14,14 @@ A modern, fast, and fun YouTube downloader with a **cartoon-style UI**, smooth a
 - ✅ **Audio downloads** (128k, 320k)
 - ✅ **Files save to local storage** automatically
 - ✅ **Beautiful cartoon UI** with animations
+- 🤖 **NEW: AI-powered content analysis** (category, sentiment, language, summary, thumbnail)
+
+**🤗 AI Features:**
+- 📂 **Auto-categorization** into 10+ categories (education, entertainment, music, etc.)
+- 😊 **Sentiment analysis** (positive/negative with confidence scores)
+- 🌍 **Language detection** (100+ languages supported)
+- 📝 **Smart summaries** from video descriptions
+- 🖼️ **Thumbnail understanding** with AI image captioning
 
 **📖 See what was fixed:** [FIXES_COMPLETE.md](FIXES_COMPLETE.md)
 
@@ -72,8 +80,32 @@ Live-ready structure:
 ## 🛠️ Tech Stack
 - **Frontend:** HTML5, CSS3, JavaScript ES6+, TailwindCSS 3.x, GSAP 3.12, canvas-confetti
 - **Backend:** Python Flask, yt-dlp, Flask-CORS, Requests (Optional)
+- **AI Models:** 5 pre-trained Hugging Face models (BART, DistilBERT, XLM-RoBERTa, BLIP)
 - **Fallback:** CORS proxies, YouTube oEmbed API, client-side extraction
-- **Deployment:** GitHub Pages + Render/Railway/Vercel (backend optional)
+- **Deployment:** GitHub Pages + Render/Railway/Vercel/Hugging Face Spaces
+
+## 🤖 AI-Powered Features (NEW!)
+
+TubeNova now integrates **5 state-of-the-art Hugging Face models** for intelligent video analysis:
+
+| Model | Task | Example Output |
+|-------|------|----------------|
+| **BART-MNLI** | Content Categorization | "education" (92.3% confidence) |
+| **DistilBERT** | Sentiment Analysis | "POSITIVE" (96.7% confidence) |
+| **XLM-RoBERTa** | Language Detection | "en" (99.5% confidence) |
+| **BART-CNN** | Smart Summarization | "Learn Python basics..." |
+| **BLIP** | Thumbnail Analysis | "person coding on laptop" |
+
+**API Usage:**
+```bash
+# Enable AI analysis
+GET /api/info?url=<YOUTUBE_URL>&ai=true
+
+# Dedicated AI analysis
+GET /api/analyze?url=<YOUTUBE_URL>
+```
+
+**📖 Documentation:** [HF_MODELS_GUIDE.md](HF_MODELS_GUIDE.md) | [AI_QUICK_START.md](AI_QUICK_START.md)
 
 ## 🚀 Quick Start
 
