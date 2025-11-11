@@ -34,133 +34,328 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-200 dark:bg-slate-950">
-  <!-- Animated background -->
+  <!-- Animated background with floating shapes -->
   <div class="fixed inset-0 -z-10 overflow-hidden">
-    <div id="galaxy" class="absolute inset-0"></div>
+    <div id="galaxy" class="absolute inset-0">
+      <div class="float-shape shape-1"></div>
+      <div class="float-shape shape-2"></div>
+      <div class="float-shape shape-3"></div>
+      <div class="float-shape shape-4"></div>
+    </div>
     <div class="absolute inset-0 bg-gradient-to-b from-transparent/20 to-black/40"></div>
   </div>
 
   <header class="container mx-auto p-4 flex items-center justify-between">
-    <div class="flex items-center gap-2">
-      <img src="logo.svg" class="w-9 h-9" alt="TubeNova logo" />
-      <h1 class="text-xl sm:text-2xl font-bold tracking-tight">
-        TubeNova <span class="text-neon-blue">– Download Smarter</span>
-      </h1>
-    </div>
     <div class="flex items-center gap-3">
-      <button id="backendBtn" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 transition">Backend</button>
-      <button id="themeToggle" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 shadow-glow transition">
-        <span id="themeLabel">Dark</span>
+      <img src="logo.svg" class="w-10 h-10 wobble-on-hover" alt="TubeNova logo" />
+      <div>
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
+          TubeNova <span class="text-2xl">🎬</span>
+        </h1>
+        <p class="text-xs text-slate-400">Download Smarter, Smile Bigger! 😊</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 sm:gap-3">
+      <button id="backendBtn" class="px-2 sm:px-3 py-2 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 backdrop-blur-md border-2 border-purple-400/30 transition text-xs sm:text-base tooltip" data-tooltip="Configure Backend">
+        ⚙️
       </button>
-      <a href="about.html" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 transition">About</a>
+      <button id="themeToggle" class="px-2 sm:px-3 py-2 rounded-xl bg-yellow-500/20 hover:bg-yellow-500/30 backdrop-blur-md border-2 border-yellow-400/30 shadow-glow transition text-xs sm:text-base tooltip" data-tooltip="Toggle Theme">
+        <span id="themeIcon">🌙</span>
+      </button>
+      <button id="playlistBtn" class="px-2 sm:px-3 py-2 rounded-xl bg-green-500/20 hover:bg-green-500/30 backdrop-blur-md border-2 border-green-400/30 transition text-xs sm:text-base tooltip" data-tooltip="Playlist Mode">
+        📋
+      </button>
+      <a href="about.html" class="px-2 sm:px-3 py-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 backdrop-blur-md border-2 border-blue-400/30 transition text-xs sm:text-base tooltip" data-tooltip="About">ℹ️</a>
     </div>
   </header>
 
   <main class="container mx-auto p-4">
-    <section class="relative rounded-3xl p-6 sm:p-8 bg-white/10 dark:bg-white/10 border border-white/15 backdrop-blur-2xl shadow-glow">
-      <h2 class="text-2xl font-semibold mb-4">YouTube Downloader</h2>
+    <!-- Feature tabs -->
+    <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+      <button id="tabSingle" class="tab-btn px-4 py-2 rounded-xl bg-neon-pink/30 border-2 border-neon-pink text-white font-semibold whitespace-nowrap">
+        🎥 Single Video
+      </button>
+      <button id="tabPlaylist" class="tab-btn px-4 py-2 rounded-xl bg-white/10 border-2 border-white/20 text-slate-300 hover:bg-white/20 whitespace-nowrap">
+        📋 Playlist
+      </button>
+      <button id="tabTools" class="tab-btn px-4 py-2 rounded-xl bg-white/10 border-2 border-white/20 text-slate-300 hover:bg-white/20 whitespace-nowrap">
+        🛠️ Tools
+      </button>
+    </div>
+
+    <section class="relative rounded-3xl p-6 sm:p-8 bg-white/10 dark:bg-white/10 border-3 border-white/20 backdrop-blur-2xl shadow-glow card-hover">
+      <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+        <span class="text-3xl">🎬</span>
+        YouTube Downloader
+        <span class="text-sm font-normal text-slate-400 ml-2">- Make it yours!</span>
+      </h2>
 
       <div class="grid md:grid-cols-2 gap-6">
         <div>
-          <label class="block text-sm mb-2">Paste YouTube link</label>
-          <div class="flex gap-3">
-            <input id="ytUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." class="w-full px-4 py-3 rounded-2xl bg-black/40 border border-white/10 focus:outline-none focus:ring-2 focus:ring-neon-blue placeholder-slate-400" />
-            <button id="fetchBtn" class="px-4 py-3 rounded-2xl bg-neon-blue/20 hover:bg-neon-blue/30 text-neon-blue border border-neon-blue/30 shadow-glow">Fetch</button>
+          <label class="block text-sm mb-2 flex items-center gap-2">
+            <span class="text-lg">🔗</span>
+            Paste YouTube link or Video ID
+          </label>
+          <div class="flex gap-2">
+            <div class="flex-1 relative">
+              <input id="ytUrl" type="text" placeholder="https://youtu.be/dQw4w9WgXcQ or just: dQw4w9WgXcQ" 
+                class="w-full px-4 py-3 rounded-2xl bg-black/40 border-2 border-white/10 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:border-neon-blue placeholder-slate-400 pr-10" />
+              <button id="pasteBtn" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-white/10 rounded-lg tooltip" data-tooltip="Paste from clipboard">
+                📋
+              </button>
+            </div>
+            <button id="fetchBtn" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-neon-blue/30 to-neon-pink/30 hover:from-neon-blue/40 hover:to-neon-pink/40 text-white border-2 border-neon-blue/40 shadow-glow font-semibold whitespace-nowrap pulse">
+              ✨ Fetch
+            </button>
+          </div>
+          <div class="mt-2 flex gap-2 text-xs">
+            <button id="exampleBtn1" class="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10">Try Example 🎵</button>
+            <button id="exampleBtn2" class="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10">Try Short 🎬</button>
           </div>
 
-          <div class="mt-4 grid grid-cols-2 gap-3">
+          <div class="mt-4 grid grid-cols-3 gap-3">
             <div>
-              <label class="block text-sm mb-1">Type</label>
-              <select id="typeSelect" class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10">
-                <option value="video">Video 🎥</option>
-                <option value="audio">Audio 🎧</option>
+              <label class="block text-sm mb-1 flex items-center gap-1">
+                <span>📦</span> Type
+              </label>
+              <select id="typeSelect" class="w-full px-3 py-2 rounded-xl bg-black/40 border-2 border-white/10 focus:border-neon-blue cursor-pointer">
+                <option value="video">🎥 Video</option>
+                <option value="audio">🎧 Audio</option>
               </select>
             </div>
             <div>
-              <label class="block text-sm mb-1">Quality</label>
-              <select id="qualitySelect" class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10">
-                <option value="auto">Auto (recommended)</option>
-                <optgroup label="Video">
-                  <option value="144p">144p</option>
-                  <option value="240p">240p</option>
-                  <option value="360p">360p</option>
-                  <option value="480p">480p</option>
-                  <option value="720p">720p</option>
-                  <option value="1080p">1080p</option>
+              <label class="block text-sm mb-1 flex items-center gap-1">
+                <span>⚡</span> Quality
+              </label>
+              <select id="qualitySelect" class="w-full px-3 py-2 rounded-xl bg-black/40 border-2 border-white/10 focus:border-neon-blue cursor-pointer">
+                <option value="auto">✨ Auto (Smart)</option>
+                <optgroup label="📹 Video">
+                  <option value="144p">144p (Tiny)</option>
+                  <option value="240p">240p (Low)</option>
+                  <option value="360p">360p (Good)</option>
+                  <option value="480p">480p (Better)</option>
+                  <option value="720p">720p (HD)</option>
+                  <option value="1080p">1080p (Full HD)</option>
                 </optgroup>
-                <optgroup label="Audio">
-                  <option value="128k">128 kbps</option>
-                  <option value="320k">320 kbps</option>
+                <optgroup label="🎵 Audio">
+                  <option value="128k">128 kbps (Good)</option>
+                  <option value="320k">320 kbps (Best)</option>
                 </optgroup>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm mb-1 flex items-center gap-1">
+                <span>🎨</span> Format
+              </label>
+              <select id="formatSelect" class="w-full px-3 py-2 rounded-xl bg-black/40 border-2 border-white/10 focus:border-neon-blue cursor-pointer">
+                <option value="mp4">MP4 (Video)</option>
+                <option value="webm">WebM (Video)</option>
+                <option value="m4a">M4A (Audio)</option>
+                <option value="mp3">MP3 (Audio)</option>
               </select>
             </div>
           </div>
 
-          <div class="mt-4 flex items-center gap-3">
-            <button id="downloadBtn" class="px-5 py-3 rounded-2xl bg-neon-pink/20 hover:bg-neon-pink/30 text-neon-pink border border-neon-pink/30 shadow-glow disabled:opacity-50 disabled:cursor-not-allowed">Download</button>
-            <button id="copyBtn" class="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10">Copy Link</button>
-            <a id="waBtn" target="_blank" class="px-4 py-3 rounded-2xl bg-green-500/20 hover:bg-green-500/30 border border-green-500/40" href="#">Share on WhatsApp</a>
-          </div>
-
-          <div class="mt-6">
-            <div class="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-              <div id="progressBar" class="h-full w-0 bg-neon-green transition-[width]"></div>
-            </div>
-            <p id="progressLabel" class="text-sm mt-1 text-slate-400">Idle</p>
-          </div>
-
-          <div class="mt-6 rounded-2xl p-3 bg-black/30 border border-white/10">
-            <h3 class="font-medium mb-2">Download History</h3>
-            <ul id="historyList" class="space-y-2 text-sm text-slate-300"></ul>
-          </div>
-
-          <div class="mt-6 rounded-2xl p-3 bg-black/30 border border-white/10">
-            <h3 class="font-medium mb-2">Session Analytics</h3>
-            <p id="analytics" class="text-sm text-slate-300">Downloads this session: 0</p>
-          </div>
-        </div>
-
-        <div>
-          <div id="skeleton" class="rounded-2xl overflow-hidden border border-white/10">
-            <div class="animate-pulse">
-              <div class="h-48 bg-white/10"></div>
-              <div class="p-4 space-y-2">
-                <div class="h-4 bg-white/10 w-3/4"></div>
-                <div class="h-3 bg-white/10 w-1/2"></div>
+          <!-- Advanced Options Toggle -->
+          <div class="mt-4">
+            <button id="advancedToggle" class="text-sm text-slate-400 hover:text-white flex items-center gap-2">
+              <span>⚙️</span> Advanced Options <span id="advancedArrow">▼</span>
+            </button>
+            <div id="advancedOptions" class="hidden mt-3 p-4 rounded-xl bg-black/30 border border-white/10 space-y-3">
+              <div class="flex items-center gap-3">
+                <input type="checkbox" id="trimVideo" class="w-4 h-4" />
+                <label for="trimVideo" class="text-sm">✂️ Trim video (start/end time)</label>
+              </div>
+              <div id="trimControls" class="hidden grid grid-cols-2 gap-2 ml-7">
+                <input type="text" id="trimStart" placeholder="Start (e.g., 00:10)" class="px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-sm" />
+                <input type="text" id="trimEnd" placeholder="End (e.g., 01:30)" class="px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-sm" />
+              </div>
+              <div class="flex items-center gap-3">
+                <input type="checkbox" id="extractAudio" class="w-4 h-4" />
+                <label for="extractAudio" class="text-sm">🎵 Extract audio from video</label>
+              </div>
+              <div class="flex items-center gap-3">
+                <input type="checkbox" id="autoSubtitles" class="w-4 h-4" />
+                <label for="autoSubtitles" class="text-sm">📝 Download subtitles (if available)</label>
               </div>
             </div>
           </div>
 
-          <div id="metaCard" class="hidden rounded-2xl overflow-hidden border border-white/10 bg-black/30">
-            <img id="thumb" class="w-full aspect-video object-cover" alt="thumbnail" />
-            <div class="p-4 space-y-1">
-              <h3 id="title" class="text-lg font-semibold"></h3>
-              <p id="channel" class="text-slate-300"></p>
-              <p id="duration" class="text-slate-400 text-sm"></p>
+          <div class="mt-4 flex flex-wrap items-center gap-2">
+            <button id="downloadBtn" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-neon-pink/30 to-purple-500/30 hover:from-neon-pink/40 hover:to-purple-500/40 text-white border-2 border-neon-pink/40 shadow-glow disabled:opacity-50 disabled:cursor-not-allowed font-bold flex items-center gap-2">
+              <span>⬇️</span> Download
+            </button>
+            <button id="copyBtn" class="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 border-2 border-white/10 tooltip" data-tooltip="Copy video link">
+              📋
+            </button>
+            <a id="waBtn" target="_blank" class="px-4 py-3 rounded-2xl bg-green-500/20 hover:bg-green-500/30 border-2 border-green-500/40 tooltip" data-tooltip="Share on WhatsApp" href="#">
+              💬
+            </a>
+            <button id="thumbnailBtn" class="px-4 py-3 rounded-2xl bg-blue-500/20 hover:bg-blue-500/30 border-2 border-blue-500/40 tooltip" data-tooltip="Download thumbnail">
+              🖼️
+            </button>
+            <button id="infoBtn" class="px-4 py-3 rounded-2xl bg-yellow-500/20 hover:bg-yellow-500/30 border-2 border-yellow-500/40 tooltip" data-tooltip="Show video info">
+              ℹ️
+            </button>
+          </div>
+
+          <div class="mt-6 p-4 rounded-2xl bg-black/30 border-2 border-white/10">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-semibold flex items-center gap-2">
+                <span id="progressEmoji">💤</span>
+                <span id="progressLabel">Ready to download!</span>
+              </span>
+              <span id="progressPercent" class="text-sm font-bold text-neon-green">0%</span>
             </div>
-            <div class="p-4 border-t border-white/10">
-              <video id="preview" class="w-full rounded-lg" controls playsinline></video>
+            <div class="h-3 w-full bg-white/10 rounded-full overflow-hidden relative">
+              <div id="progressBar" class="h-full w-0 bg-gradient-to-r from-neon-green via-neon-blue to-neon-pink transition-all duration-300"></div>
+            </div>
+            <div class="mt-2 flex items-center justify-between text-xs text-slate-400">
+              <span id="downloadSpeed">-- KB/s</span>
+              <span id="downloadETA">ETA: --</span>
+            </div>
+          </div>
+
+          <div class="mt-6 rounded-2xl p-4 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-2 border-purple-400/20">
+            <h3 class="font-bold mb-3 flex items-center gap-2">
+              <span>📜</span> Download History
+              <button id="clearHistory" class="ml-auto text-xs px-2 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-400/30">
+                🗑️ Clear
+              </button>
+            </h3>
+            <ul id="historyList" class="space-y-2 text-sm text-slate-300 max-h-48 overflow-y-auto"></ul>
+            <p id="historyEmpty" class="text-sm text-slate-400 text-center py-4">No downloads yet. Start downloading! 🚀</p>
+          </div>
+
+          <div class="mt-4 rounded-2xl p-4 bg-gradient-to-br from-blue-500/10 to-green-500/10 border-2 border-blue-400/20">
+            <h3 class="font-bold mb-3 flex items-center gap-2">
+              <span>📊</span> Session Stats
+            </h3>
+            <div class="grid grid-cols-2 gap-3 text-sm">
+              <div class="text-center p-2 rounded-lg bg-white/5">
+                <div class="text-2xl font-bold text-neon-pink" id="statsDownloads">0</div>
+                <div class="text-xs text-slate-400">Downloads</div>
+              </div>
+              <div class="text-center p-2 rounded-lg bg-white/5">
+                <div class="text-2xl font-bold text-neon-blue" id="statsSize">0 MB</div>
+                <div class="text-xs text-slate-400">Total Size</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div id="skeleton" class="rounded-2xl overflow-hidden border-2 border-white/10 skeleton-shimmer">
+            <div class="h-52 bg-white/10 relative flex items-center justify-center">
+              <span class="text-6xl animate-pulse">🎬</span>
+            </div>
+            <div class="p-4 space-y-3 bg-black/30">
+              <div class="h-4 bg-white/10 w-3/4 rounded"></div>
+              <div class="h-3 bg-white/10 w-1/2 rounded"></div>
+              <div class="h-3 bg-white/10 w-2/3 rounded"></div>
+            </div>
+          </div>
+
+          <div id="metaCard" class="hidden rounded-2xl overflow-hidden border-2 border-neon-blue/30 bg-black/40 card-hover">
+            <div class="relative group">
+              <img id="thumb" class="w-full aspect-video object-cover" alt="thumbnail" />
+              <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <button id="playPreview" class="text-6xl hover:scale-110 transition-transform">
+                  ▶️
+                </button>
+              </div>
+              <div id="videoBadge" class="absolute top-2 right-2 px-3 py-1 rounded-full bg-red-500/90 text-white text-xs font-bold">
+                LIVE
+              </div>
+            </div>
+            <div class="p-4 space-y-2">
+              <h3 id="title" class="text-lg font-bold leading-tight"></h3>
+              <div class="flex items-center gap-2 text-sm text-slate-300">
+                <span>👤</span>
+                <p id="channel" class="flex-1"></p>
+              </div>
+              <div class="flex items-center gap-4 text-sm text-slate-400">
+                <span class="flex items-center gap-1">
+                  <span>⏱️</span>
+                  <span id="duration"></span>
+                </span>
+                <span class="flex items-center gap-1">
+                  <span>👁️</span>
+                  <span id="views">-- views</span>
+                </span>
+                <span class="flex items-center gap-1">
+                  <span>👍</span>
+                  <span id="likes">--</span>
+                </span>
+              </div>
+            </div>
+            <div id="previewContainer" class="hidden p-4 border-t-2 border-white/10 bg-black/20">
+              <iframe id="preview" class="w-full aspect-video rounded-lg" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="p-3 border-t border-white/10 flex gap-2">
+              <button class="reaction-btn flex-1 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xl" data-reaction="like">
+                👍
+              </button>
+              <button class="reaction-btn flex-1 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xl" data-reaction="love">
+                ❤️
+              </button>
+              <button class="reaction-btn flex-1 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xl" data-reaction="fire">
+                🔥
+              </button>
+              <button class="reaction-btn flex-1 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xl" data-reaction="party">
+                🎉
+              </button>
             </div>
           </div>
 
           <div class="mt-6">
-            <h3 class="font-medium mb-2">Recommended similar videos</h3>
+            <h3 class="font-bold mb-3 flex items-center gap-2">
+              <span>✨</span> AI Recommended Videos
+            </h3>
             <div id="reco" class="grid grid-cols-2 gap-3"></div>
           </div>
         </div>
       </div>
     </section>
 
-    <footer class="text-center text-slate-400 mt-10">
-      Developed with ❤️ by Umesh Patel · <span class="opacity-80">This tool is for educational and personal use only.</span>
+    <footer class="text-center text-slate-400 mt-10 pb-20">
+      <div class="mb-4 flex items-center justify-center gap-4">
+        <button class="social-btn px-4 py-2 rounded-full bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 flex items-center gap-2 text-sm">
+          <span>⭐</span> Star on GitHub
+        </button>
+        <button class="social-btn px-4 py-2 rounded-full bg-pink-500/20 hover:bg-pink-500/30 border border-pink-400/30 flex items-center gap-2 text-sm">
+          <span>💖</span> Share with Friends
+        </button>
+      </div>
+      <p class="mb-2">
+        Developed with ❤️ by <span class="font-bold text-neon-pink">Umesh Patel</span>
+      </p>
+      <p class="text-xs opacity-80">This tool is for educational and personal use only. 📚</p>
+      <p class="text-xs mt-2">
+        <span class="inline-block mx-1">🎬</span>
+        <span class="inline-block mx-1">🎵</span>
+        <span class="inline-block mx-1">✨</span>
+        <span class="inline-block mx-1">💫</span>
+        <span class="inline-block mx-1">🚀</span>
+      </p>
     </footer>
   </main>
 
-  <div id="toast" class="fixed top-4 right-4 max-w-sm hidden"></div>
+  <!-- Floating Action Button -->
+  <button id="fab" class="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-r from-neon-pink to-neon-blue shadow-2xl flex items-center justify-center text-2xl hover:scale-110 transition-transform z-50 tooltip" data-tooltip="Quick Download">
+    ⚡
+  </button>
+
+  <!-- Toast Container -->
+  <div id="toast" class="fixed top-4 right-4 max-w-sm hidden z-50"></div>
+
+  <!-- Reaction Overlay -->
+  <div id="reactionOverlay" class="fixed inset-0 pointer-events-none z-40"></div>
 
   <script>
     window.BACKEND_URL = localStorage.getItem('tubenova_backend_url') || '';
   </script>
   <script src="app.js" defer></script>
+  <script src="app-enhanced.js" defer></script>
 </body>
 </html>
