@@ -108,12 +108,29 @@ async function fetchInfo() {
   if (!url) return toast('Please paste a YouTube link', 'error');
   $('#progressLabel').textContent = 'Fetching info…';
   $('#progressBar').style.width = '15%';
+  
+  // Update progress emoji
+  if (window.updateProgressEmoji) window.updateProgressEmoji('fetching');
+  
   try {
-    const r = await fetch(`${BACKEND()}/api/info?url=${encodeURIComponent(url)}`);
-    if (!r.ok) throw new Error('Failed to fetch info');
-    const data = await r.json();
-  state.meta = data;
-  state.formats = data.formats || [];
+    let data, mode = 'backend';
+    
+    // Use smart fetch if available (tries backend first, then fallback)
+    if (window.TubeNovaFallback && window.TubeNovaFallback.smartFetch) {
+      const result = await window.TubeNovaFallback.smartFetch(url);
+      mode = result.mode;
+      data = result.data.success ? result.data.data : result.data;
+    } else {
+      // Legacy: direct backend call
+      const r = await fetch(`${BACKEND()}/api/info?url=${encodeURIComponent(url)}`);
+      if (!r.ok) throw new Error('Failed to fetch info');
+      const jsonData = await r.json();
+      data = jsonData.success ? jsonData.data : jsonData;
+    }
+    
+    state.meta = data;
+    state.formats = data.formats || [];
+    state.downloadMode = mode; // Store mode for download function
 
     // Update UI
     $('#skeleton').classList.add('hidden');
@@ -123,15 +140,14 @@ async function fetchInfo() {
     $('#channel').textContent = data.uploader || '';
     $('#duration').textContent = `Duration: ${fmtDuration(data.duration)}`;
 
-  // Preview: use YouTube Privacy-Enhanced Mode embed
-    // For simplicity, show thumbnail; when user clicks preview, try to set src to youtube embed
+    // Preview: use YouTube Privacy-Enhanced Mode embed
     const preview = $('#preview');
     preview.src = `https://www.youtube-nocookie.com/embed/${data.id}`;
 
-  // Build dynamic quality options
-  buildQualityOptions();
+    // Build dynamic quality options
+    buildQualityOptions();
 
-  // Recommend dummy
+    // Recommend dummy
     renderRecommendations(data.title);
 
     // Enable download
@@ -140,13 +156,16 @@ async function fetchInfo() {
     // Reset progress UI
     $('#progressLabel').textContent = 'Ready';
     $('#progressBar').style.width = '0%';
+    
+    if (window.updateProgressEmoji) window.updateProgressEmoji('idle');
 
-    toast('Info loaded');
+    toast(mode === 'backend' ? '✅ Info loaded' : '🌐 Info loaded (fallback mode)');
   } catch (e) {
     console.error(e);
-    toast('Error: could not fetch info', 'error');
+    toast('❌ Error: could not fetch info', 'error');
     $('#progressLabel').textContent = 'Error';
     $('#progressBar').style.width = '0%';
+    if (window.updateProgressEmoji) window.updateProgressEmoji('error');
   }
 }
 
@@ -186,10 +205,37 @@ async function downloadSelected() {
   if (!format_id) return toast('Selected quality not available', 'error');
 
   playClickSound();
+  if (window.updateProgressEmoji) window.updateProgressEmoji('downloading');
 
   $('#progressLabel').textContent = 'Downloading…';
   $('#progressBar').style.width = '5%';
 
+  // Check if we're in fallback mode
+  if (state.downloadMode === 'fallback' && window.TubeNovaFallback) {
+    // Fallback mode: redirect to download service
+    toast('🌐 Opening download service...', 'info');
+    window.TubeNovaFallback.downloadFallback(url, quality, type);
+    
+    // Still track it
+    state.downloadsThisSession += 1;
+    sessionStorage.setItem('tn_downloads', String(state.downloadsThisSession));
+    setAnalytics();
+    
+    saveHistory({
+      title: state.meta.title,
+      thumbnail: state.meta.thumbnail,
+      url: state.meta.webpage_url,
+      type, quality
+    });
+    
+    $('#progressLabel').textContent = 'Redirected';
+    $('#progressBar').style.width = '100%';
+    if (window.updateProgressEmoji) window.updateProgressEmoji('complete');
+    setTimeout(() => { $('#progressBar').style.width = '0%'; }, 1000);
+    return;
+  }
+
+  // Backend mode: stream download
   const dlUrl = `${BACKEND()}/api/download?url=${encodeURIComponent(url)}&format_id=${encodeURIComponent(format_id)}`;
 
   try {
@@ -200,16 +246,29 @@ async function downloadSelected() {
     const contentLength = Number(res.headers.get('Content-Length') || '0');
     const chunks = [];
     let received = 0;
+    const startTime = Date.now();
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
       chunks.push(value);
       received += value.length;
+      
+      // Update progress and stats
       if (contentLength) {
         const pct = Math.min(100, Math.round(received * 100 / contentLength));
         $('#progressBar').style.width = pct + '%';
         $('#progressLabel').textContent = `Downloading… ${pct}%`;
+        
+        // Calculate speed and ETA
+        const elapsed = (Date.now() - startTime) / 1000;
+        const speed = received / elapsed;
+        const remaining = contentLength - received;
+        const eta = remaining / speed;
+        
+        if (window.updateProgress) {
+          window.updateProgress(pct, speed, eta);
+        }
       } else {
         const base = Math.min(95, 5 + Math.round(received / (1024*256)));
         $('#progressBar').style.width = base + '%';
@@ -228,14 +287,24 @@ async function downloadSelected() {
     a.remove();
     URL.revokeObjectURL(urlObj);
 
+    // Track download size
+    if (window.enhancedState) {
+      window.enhancedState.totalDownloadSize += received;
+    }
+
     // Confetti
     if (window.confetti) {
       confetti({ particleCount: 160, spread: 70, origin: { y: 0.2 } });
     }
+    
+    if (window.playSound) window.playSound('success');
+    if (window.showReaction) window.showReaction('party');
 
     state.downloadsThisSession += 1;
     sessionStorage.setItem('tn_downloads', String(state.downloadsThisSession));
     setAnalytics();
+    
+    if (window.updateStats) window.updateStats();
 
     saveHistory({
       title: state.meta.title,
@@ -244,15 +313,17 @@ async function downloadSelected() {
       type, quality
     });
 
-    toast('Download complete ✅');
+    toast('✅ Download complete!');
     $('#progressLabel').textContent = 'Done';
     $('#progressBar').style.width = '100%';
+    if (window.updateProgressEmoji) window.updateProgressEmoji('complete');
     setTimeout(() => { $('#progressBar').style.width = '0%'; }, 800);
   } catch (e) {
     console.error(e);
-    toast('Download failed', 'error');
+    toast('❌ Download failed', 'error');
     $('#progressLabel').textContent = 'Error';
     $('#progressBar').style.width = '0%';
+    if (window.updateProgressEmoji) window.updateProgressEmoji('error');
   }
 }
 

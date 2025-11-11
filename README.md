@@ -1,31 +1,68 @@
-# TubeNova – Download Smarter 🎧📽️
+# 🎬 TubeNova – Download Smarter 🎧📽️
 
-A modern, fast, and elegant YouTube downloader web app with a glassmorphism UI, smooth animations, and an instant streaming backend.
+A modern, fast, and fun YouTube downloader with a **cartoon-style UI**, smooth animations, and smart serverless fallback!
+
+**🌟 Live Demo:** [https://umeshcode1.github.io/TubeNova-YouTube-Downloader/](https://umeshcode1.github.io/TubeNova-YouTube-Downloader/)
+
+**✨ New:** Works **without** backend! Client-side fallback mode using CORS proxies.
 
 Live-ready structure:
-- Frontend: `docs/` (GitHub Pages friendly)
-- Backend: `backend/` (Render / Railway / Vercel)
+- Frontend: `docs/` (GitHub Pages ready)
+- Backend: `backend/` (Optional - Render/Railway/Vercel)
+- Fallback: Client-side mode for serverless deployment
 
-## Features
-- Paste any YouTube link (videos + Shorts)
-- Download as Video (144p–1080p) or Audio (128/320 kbps)
-- Video thumbnail, title, duration, channel
-- Live preview (video/audio) before download
-- Progress bar, loading spinner, toasts, confetti on success
-- No storage on server: streamed instantly
-- Error handling for invalid/blocked links
-- Dark/Light mode with persistence
-- Glassmorphism + neon glow + animated background
-- Download History (localStorage) + session analytics
-- Quality Auto Picker (based on connection)
-- Recommended similar videos (AI-ish dummy suggestions)
-- Copy Link / Share on WhatsApp
-- About page + disclaimer
+## 🎉 Features
 
-## Tech Stack
-- Frontend: HTML, CSS, JavaScript, TailwindCSS (CDN), GSAP, canvas-confetti
-- Backend: Python Flask, yt-dlp, Flask-CORS, Requests
-- Deployment: GitHub Pages (frontend) + Render/Railway/Vercel (backend)
+### Core Features
+- 📺 Paste any YouTube link (videos + Shorts)
+- ⬇️ Download as Video (144p–1080p) or Audio (128k/320k)
+- 🖼️ Video thumbnail, title, duration, channel info
+- 🎬 Live preview (embedded YouTube player)
+- 📊 Progress bar with speed/ETA tracking
+- 🎊 Confetti celebration on download complete
+- 🔄 No server storage: instant streaming
+- 🌙 Dark/Light mode with persistence
+- 📜 Download History (localStorage)
+- 📈 Session analytics tracking
+
+### Cartoon-Style UI
+- 🎨 Floating shapes animation
+- 🎯 Bounce & squeeze button effects
+- 💫 Ripple effects on click
+- 🎪 Wobble animations for icons
+- ✨ Shimmer loading effects
+- 💬 Cute tooltips everywhere
+- 🎭 Emoji indicators & reactions
+- 🎨 Hand-drawn aesthetic
+
+### Advanced Features  
+- 📋 Paste from clipboard button
+- 🎵 Example video buttons
+- ⚙️ Advanced options panel
+- ✂️ Video trimmer controls
+- 🎧 Extract audio checkbox
+- 📝 Auto subtitles option
+- 🖼️ Download thumbnail button
+- ℹ️ Show detailed video info
+- 👍❤️🔥🎉 Reaction buttons with animations
+- 🎯 Floating Action Button (FAB)
+- 🧹 Clear history feature
+- 🎮 Tab switching (Single/Playlist/Tools)
+- 🌐 Smart fallback (works without backend!)
+
+### Developer Features
+- 🔄 Auto-quality picker (based on connection)
+- 🎯 Format selector (MP4/WebM/M4A/MP3)
+- 🔊 Sound effects (Web Audio API)
+- 🎪 Reaction overlay animations
+- 📱 Fully responsive design
+- ⚡ Serverless-ready with CORS proxy fallback
+
+## 🛠️ Tech Stack
+- **Frontend:** HTML5, CSS3, JavaScript ES6+, TailwindCSS 3.x, GSAP 3.12, canvas-confetti
+- **Backend:** Python Flask, yt-dlp, Flask-CORS, Requests (Optional)
+- **Fallback:** CORS proxies, YouTube oEmbed API, client-side extraction
+- **Deployment:** GitHub Pages + Render/Railway/Vercel (backend optional)
 
 ## Local Setup
 
